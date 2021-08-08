@@ -1,0 +1,6 @@
+functions:
+
+1: add quiz
+  1.1a) add question with one answer
+  1.1b) add question with multiple answers
+  1.1c) add question with option to set keywords that have to be used in the answer
