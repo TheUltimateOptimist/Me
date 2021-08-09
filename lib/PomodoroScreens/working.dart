@@ -2,8 +2,11 @@
 
 //packages:
 import 'dart:async';
-
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:audioplayers/audioplayers.dart' show AudioPlayer;
 import 'package:flutter/material.dart';
+import 'package:me/Data/Tables/pomodoroClass.dart';
 import 'package:me/PomodoroScreens/pomodoro.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
@@ -18,6 +21,7 @@ class Working extends StatefulWidget {
 }
 
 class _WorkingState extends State<Working> {
+  int? currentCount;
   Timer? t;
   String title = "Work like hell!";
   String timeLeft = "27:00";
@@ -26,16 +30,24 @@ class _WorkingState extends State<Working> {
   bool makeAPause = true;
   bool isRunning = true;
 
-void playMusic(){
-  FlutterRingtonePlayer.play(
-            android: AndroidSounds.ringtone,
-            ios: IosSounds.receivedMessage,
-            looping: false,
-            volume: 1,
-            asAlarm: true);
-}
+  void playMusic() {
+    if (kIsWeb) {
+      AudioPlayer audioPlayer = new AudioPlayer();
+      audioPlayer.setVolume(1);
+      audioPlayer.play("assets/ringtone.mp3", isLocal: true);
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      FlutterRingtonePlayer.play(
+          android: AndroidSounds.ringtone,
+          ios: IosSounds.receivedMessage,
+          looping: false,
+          volume: 1,
+          asAlarm: true);
+    }
+  }
+
   @override
   void initState() {
+    getAsyncData();
     t = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
       if (isRunning) {
         secondsLeft = secondsLeft - 1;
@@ -43,6 +55,7 @@ void playMusic(){
       }
       if (secondsLeft == 0 && makeAPause == true) {
         playMusic();
+        currentCount = currentCount! + 1;
         if (stepNumber == 4) {
           Navigator.pop(context);
           timer.cancel();
@@ -69,6 +82,16 @@ void playMusic(){
     super.initState();
   }
 
+  Future<void> getAsyncData() async {
+    String today = DateTime.now().toString();
+   if(kIsWeb){
+     currentCount = 2;
+   }
+   else if(Platform.isAndroid || Platform.isIOS){
+     currentCount = await QueryPomodoro.getPomodoroCount(today);
+   }
+  }
+
   String toTimeString(int seconds) {
     String minutes = ((seconds / 60).floor()).toString();
     String remainingSeconds = (seconds % 60).toString();
@@ -83,90 +106,96 @@ void playMusic(){
 
   @override
   Widget build(BuildContext context) {
-    initSize(context);
-    return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          toolbarHeight: h! * 11,
-          centerTitle: true,
-          title: Text(
-            title,
+    if (currentCount == null) {
+      return Container(
+        color: AppTheme.backgroundColor,
+      );
+    } else {
+      initSize(context);
+      return Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            toolbarHeight: h! * 11,
+            centerTitle: true,
+            title: Text(
+              title,
+            ),
+            textTheme: AppTheme.appBarTheme.textTheme,
+            backgroundColor: AppTheme.appBarTheme.backgroundColor,
           ),
-          textTheme: AppTheme.appBarTheme.textTheme,
-          backgroundColor: AppTheme.appBarTheme.backgroundColor,
-        ),
-        body: Container(
-          margin: EdgeInsets.symmetric(vertical: h! * 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CountingText(
-                text: "Current Count: 3",
-                fontMultiplier: 5,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: w! * 7),
-                    child: IconButton(
-                      icon: icon(),
+          body: Container(
+            margin: EdgeInsets.symmetric(vertical: h! * 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CountingText(
+                  text: "Current Count: $currentCount",
+                  fontMultiplier: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: w! * 7),
+                      child: IconButton(
+                        icon: icon(),
+                        iconSize: h! * 6,
+                        color: AppTheme.strongOne,
+                        onPressed: () {
+                          if (isRunning) {
+                            isRunning = false;
+                          } else
+                            isRunning = true;
+                          setState(() {
+                            isRunning = isRunning;
+                          });
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.cancel_presentation),
                       iconSize: h! * 6,
                       color: AppTheme.strongOne,
                       onPressed: () {
-                        if (isRunning) {
-                          isRunning = false;
-                        } else
-                          isRunning = true;
-                        setState(() {
-                          isRunning = isRunning;
-                        });
+                        Navigator.pop(context);
+                        t?.cancel();
                       },
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.cancel_presentation),
-                    iconSize: h! * 6,
-                    color: AppTheme.strongOne,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      t?.cancel();
-                    },
-                  ),
-                ],
-              ),
-              Container(
-                margin: EdgeInsets.only(top: h! * 2),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    step(1)[0],
-                    step(1)[1],
-                    step(2)[0],
-                    step(2)[1],
-                    step(3)[0],
-                    step(3)[1],
-                    step(4)[0],
-                    step(4)[1],
                   ],
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(bottom: 0),
-                child: Text(
-                  timeLeft,
-                  style: TextStyle(
-                    color: AppTheme.lightOne,
-                    fontSize: h! * 15,
-                    fontFamily: AppTheme.fontFamily,
+                Container(
+                  margin: EdgeInsets.only(top: h! * 2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      step(1)[0],
+                      step(1)[1],
+                      step(2)[0],
+                      step(2)[1],
+                      step(3)[0],
+                      step(3)[1],
+                      step(4)[0],
+                      step(4)[1],
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ));
+                Container(
+                  margin: EdgeInsets.only(bottom: 0),
+                  child: Text(
+                    timeLeft,
+                    style: TextStyle(
+                      color: AppTheme.lightOne,
+                      fontSize: h! * 15,
+                      fontFamily: AppTheme.fontFamily,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ));
+    }
   }
 
   List<Widget> step(int stepId) {
