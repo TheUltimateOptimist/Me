@@ -6,8 +6,8 @@ import 'package:me/Data/personal_database.dart';
 
 //my imports:
 import 'quiz.dart';
-import 'Pomodoro/pomodoro.dart';
-import 'package:me/Pomodoro/working.dart';
+import 'PomodoroScreens/pomodoro.dart';
+import 'package:me/PomodoroScreens/working.dart';
 import 'Data/Tables/pomodoroClass.dart';
 
 void main() async{
