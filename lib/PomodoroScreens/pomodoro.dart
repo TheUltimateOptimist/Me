@@ -21,6 +21,7 @@ import 'package:flutter/material.dart'
         StatelessWidget,
         Navigator,
         TextStyle;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:me/Data/Tables/pomodoroClass.dart';
 import 'package:syncfusion_flutter_charts/charts.dart'
     show AreaSeries, SfCartesianChart, ChartSeries;
@@ -45,18 +46,33 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
 
   Map<String, dynamic>? data;
   Future<void> getAsyncData() async {
-    List<int> pomodoroCounts = await QueryPomodoro.getSevenLastPomodoroDays();
+    late List<int> pomodoroCounts;
+    late int currentCount;
+    late int yesterdayCount;
+    late int currentGoal;
+    if (kIsWeb) {
+      pomodoroCounts = [1, 2, 5, 4, 7, 8, 5];
+      currentCount = 3;
+      yesterdayCount = 5;
+      currentGoal = 8;
+    } else {
+      pomodoroCounts = await QueryPomodoro.getSevenLastPomodoroDays();
+      currentCount =
+          await QueryPomodoro.getPomodoroCount(DateTime.now().toString());
+      yesterdayCount = await QueryPomodoro.getPomodoroCount(
+          DateTime.now().subtract(Duration(days: 1)).toString().split(" ")[0]);
+      currentGoal =
+          await QueryPomodoro.getPomodoroGoal(DateTime.now().toString());
+    }
     List<Performance> chartData = List.empty(growable: true);
     for (int i = 0; i < 7; i++) {
       chartData.add(Performance(dayNumber: i + 1, count: pomodoroCounts[i]));
     }
     data = {
       "chartData": chartData,
-      "yesterdayCount": await QueryPomodoro.getPomodoroCount(
-          DateTime.now().subtract(Duration(days: 1)).toString().split(" ")[0]),
-      "currentCount":
-          await QueryPomodoro.getPomodoroCount(DateTime.now().toString()),
-      "currentGoal": await QueryPomodoro.getPomodoroGoal(DateTime.now().toString())
+      "yesterdayCount": yesterdayCount,
+      "currentCount": currentCount,
+      "currentGoal": currentGoal
     };
     setState(() {
       data = data;

@@ -2,7 +2,6 @@
 
 //packages:
 import 'package:flutter/material.dart';
-import 'package:me/Data/personal_database.dart';
 
 //my imports:
 import 'quiz.dart';
@@ -11,7 +10,6 @@ import 'package:me/PomodoroScreens/working.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  print((await PersonalDatabase.instance.select("SELECT COUNT(*) FROM pomodoro"))[0]);
   runApp(MyApp());
 }
 
