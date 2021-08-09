@@ -1,32 +1,21 @@
-// this file contains the data model belonging to the pomodoro technique
+// this file contains the mixins the mixin QueryPomodoro that contains the functions needed for retrieving data from the pomodoro table
 
 import 'package:me/Data/personal_database.dart';
 
-class Pomodoro {
-  Pomodoro({required this.day, required this.goal, this.count = 0});
-  final String day;
-  final int goal;
-  final int count;
+
+///contains the functions needed for retrieving data from the pomodoro table
+///
+///table info:
+///
+///name: pomodoro
+///
+///column1: day Date PRIMARY KEY
+///column2: goal INTEGER NOT NULL
+///column3: count INTEGER
+mixin QueryPomodoro {
   static const String table = "pomodoro";
-  Map<String, dynamic> toMap() {
-    return {
-      "day": day,
-      "goal": goal,
-      "count": count,
-    };
-  }
-
-//inserts one Pomodoro into the pomodoro table
-  static Future<void> insertPomodoro(Pomodoro pomodoro) async {
-    String day = DateTime.now().toString().split(" ")[0];
-    if (await getPomodoroCount(day) > 0) {
-      await PersonalDatabase.instance.insertIntoTable(table, pomodoro.toMap());
-    } else
-      await PersonalDatabase.instance
-          .update("UPDATE $table SET count = count + 1 WHERE day = '$day'");
-  }
-
   static Future<List<int>> getSevenLastPomodoroDays() async {
+    //sqlite:
     List<Map<String, dynamic>> tableOrdered = await PersonalDatabase.instance
         .selectFromTable(table, columns: ["count", "day"], orderBy: "day DESC");
     print(tableOrdered);
@@ -47,9 +36,10 @@ class Pomodoro {
   ///
   ///String day needs format: 2021-12-12
   static Future<int> getPomodoroCount(String day) async {
+    //sqlite:
     bool exists = false;
-    if ((await PersonalDatabase.instance.select(
-                "SELECT COUNT(*) FROM $table WHERE day = '$day'"))[0]
+    if ((await PersonalDatabase.instance
+                .select("SELECT COUNT(*) FROM $table WHERE day = '$day'"))[0]
             ["COUNT(*)"] >
         0) {
       exists = true;
@@ -62,9 +52,10 @@ class Pomodoro {
   }
 
   static Future<int> getPomodoroGoal(String day) async {
+    //sqlite:
     bool exists = false;
-    if ((await PersonalDatabase.instance.select(
-                "SELECT COUNT(*) FROM $table WHERE day = '$day'"))[0]
+    if ((await PersonalDatabase.instance
+                .select("SELECT COUNT(*) FROM $table WHERE day = '$day'"))[0]
             ["COUNT(*)"] >
         0) {
       exists = true;

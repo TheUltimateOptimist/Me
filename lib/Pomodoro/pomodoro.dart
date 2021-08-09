@@ -45,18 +45,18 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
 
   Map<String, dynamic>? data;
   Future<void> getAsyncData() async {
-    List<int> pomodoroCounts = await Pomodoro.getSevenLastPomodoroDays();
+    List<int> pomodoroCounts = await QueryPomodoro.getSevenLastPomodoroDays();
     List<Performance> chartData = List.empty(growable: true);
     for (int i = 0; i < 7; i++) {
       chartData.add(Performance(dayNumber: i + 1, count: pomodoroCounts[i]));
     }
     data = {
       "chartData": chartData,
-      "yesterdayCount": await Pomodoro.getPomodoroCount(
+      "yesterdayCount": await QueryPomodoro.getPomodoroCount(
           DateTime.now().subtract(Duration(days: 1)).toString().split(" ")[0]),
       "currentCount":
-          await Pomodoro.getPomodoroCount(DateTime.now().toString()),
-      "currentGoal": await Pomodoro.getPomodoroGoal(DateTime.now().toString())
+          await QueryPomodoro.getPomodoroCount(DateTime.now().toString()),
+      "currentGoal": await QueryPomodoro.getPomodoroGoal(DateTime.now().toString())
     };
     setState(() {
       data = data;
