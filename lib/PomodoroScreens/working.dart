@@ -4,7 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:me/Pomodoro/pomodoro.dart';
+import 'package:me/PomodoroScreens/pomodoro.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 //my packages:

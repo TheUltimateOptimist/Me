@@ -8,7 +8,6 @@ import 'package:me/Data/personal_database.dart';
 import 'quiz.dart';
 import 'PomodoroScreens/pomodoro.dart';
 import 'package:me/PomodoroScreens/working.dart';
-import 'Data/Tables/pomodoroClass.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
