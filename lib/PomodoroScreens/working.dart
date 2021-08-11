@@ -7,8 +7,11 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:audioplayers/audioplayers.dart' show AudioPlayer;
 import 'package:flutter/material.dart';
 import 'package:me/Data/Tables/pomodoroClass.dart';
+import 'package:me/Data/personal_database.dart';
 import 'package:me/PomodoroScreens/pomodoro.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:me/SDK/ground.dart';
+import 'package:me/functions.dart';
 
 //my packages:
 import 'package:me/theme.dart';
@@ -34,7 +37,7 @@ class _WorkingState extends State<Working> {
     if (kIsWeb) {
       AudioPlayer audioPlayer = new AudioPlayer();
       audioPlayer.setVolume(1);
-      audioPlayer.play("assets/ringtone.mp3", isLocal: true);
+      audioPlayer.play("assets/assets/ringtone.mp3", isLocal: true);
     } else if (Platform.isAndroid || Platform.isIOS) {
       FlutterRingtonePlayer.play(
           android: AndroidSounds.ringtone,
@@ -56,6 +59,8 @@ class _WorkingState extends State<Working> {
       if (secondsLeft == 0 && makeAPause == true) {
         playMusic();
         currentCount = currentCount! + 1;
+        String time = currentDateString();
+        postData("UPDATE pomodoro SET count = count + 1 WHERE day = '$time'");
         if (stepNumber == 4) {
           Navigator.pop(context);
           timer.cancel();
@@ -83,13 +88,10 @@ class _WorkingState extends State<Working> {
   }
 
   Future<void> getAsyncData() async {
-    String today = DateTime.now().toString();
-   if(kIsWeb){
-     currentCount = 2;
-   }
-   else if(Platform.isAndroid || Platform.isIOS){
-     currentCount = await QueryPomodoro.getPomodoroCount(today);
-   }
+    currentCount = await QueryPomodoro.getPomodoroCount(0);
+    setState(() {
+      currentCount = currentCount;
+    });
   }
 
   String toTimeString(int seconds) {

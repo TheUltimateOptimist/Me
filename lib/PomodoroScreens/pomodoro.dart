@@ -3,26 +3,35 @@
 //packages:
 import 'package:flutter/material.dart'
     show
-        State,
-        StatefulWidget,
-        Key,
+        AlertDialog,
         AppBar,
-        Container,
-        Widget,
+        BorderSide,
         BuildContext,
+        Column,
+        Container,
+        CrossAxisAlignment,
+        EdgeInsets,
+        ElevatedButton,
+        InputDecoration,
+        Key,
+        MainAxisAlignment,
+        Navigator,
         SafeArea,
         Scaffold,
-        EdgeInsets,
-        Text,
-        Column,
-        CrossAxisAlignment,
-        MainAxisAlignment,
-        ElevatedButton,
+        State,
+        StatefulWidget,
         StatelessWidget,
-        Navigator,
-        TextStyle;
-import 'package:flutter/foundation.dart' show kIsWeb;
+        Text,
+        TextButton,
+        TextEditingController,
+        TextField,
+        TextStyle,
+        UnderlineInputBorder,
+        Widget,
+        showDialog;
 import 'package:me/Data/Tables/pomodoroClass.dart';
+import 'package:me/Data/personal_database.dart';
+import 'package:me/functions.dart';
 import 'package:syncfusion_flutter_charts/charts.dart'
     show AreaSeries, SfCartesianChart, ChartSeries;
 
@@ -38,45 +47,86 @@ class PomodoroScreen extends StatefulWidget {
 }
 
 class _PomodoroScreenState extends State<PomodoroScreen> {
+  final textEditingController = new TextEditingController();
   @override
   void initState() {
     getAsyncData();
+    checkDayInitialization();
     super.initState();
   }
 
   Map<String, dynamic>? data;
   Future<void> getAsyncData() async {
-    late List<int> pomodoroCounts;
-    late int currentCount;
-    late int yesterdayCount;
-    late int currentGoal;
-    if (kIsWeb) {
-      pomodoroCounts = [1, 2, 5, 4, 7, 8, 5];
-      currentCount = 3;
-      yesterdayCount = 5;
-      currentGoal = 8;
-    } else {
-      pomodoroCounts = await QueryPomodoro.getSevenLastPomodoroDays();
-      currentCount =
-          await QueryPomodoro.getPomodoroCount(DateTime.now().toString());
-      yesterdayCount = await QueryPomodoro.getPomodoroCount(
-          DateTime.now().subtract(Duration(days: 1)).toString().split(" ")[0]);
-      currentGoal =
-          await QueryPomodoro.getPomodoroGoal(DateTime.now().toString());
-    }
+    List<int> pomodoroCounts = await QueryPomodoro.getSevenLastPomodoroDays();
     List<Performance> chartData = List.empty(growable: true);
     for (int i = 0; i < 7; i++) {
       chartData.add(Performance(dayNumber: i + 1, count: pomodoroCounts[i]));
     }
     data = {
       "chartData": chartData,
-      "yesterdayCount": yesterdayCount,
-      "currentCount": currentCount,
-      "currentGoal": currentGoal
+      "yesterdayCount": await QueryPomodoro.getPomodoroCount(-1),
+      "currentCount": await QueryPomodoro.getPomodoroCount(0),
+      "currentGoal": await QueryPomodoro.getPomodoroGoal()
     };
     setState(() {
       data = data;
     });
+  }
+
+  Future<void> checkDayInitialization() async {
+    if (!await QueryPomodoro.isDayInitialized()) {
+      AlertDialog alertDialog = AlertDialog(
+        title: Text(
+          "Enter today´s Pomdoro Goal:",
+          style: TextStyle(
+            color: AppTheme.lightOne,
+            fontSize: h! * 3,
+            fontFamily: AppTheme.fontFamily,
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text(
+              "OK",
+              style: TextStyle(
+                  color: AppTheme.lightTwo,
+                  fontFamily: AppTheme.fontFamily,
+                  fontSize: h! * 4),
+            ),
+            onPressed: () async {
+              String time = currentDateString();
+              int goal = int.parse(textEditingController.text);
+              await postData(
+                  "INSERT INTO pomodoro VALUES('$time', $goal, 0)");
+                  await getAsyncData();
+              setState((){
+              });
+              Navigator.pop(context);
+            },
+          )
+        ],
+        backgroundColor: AppTheme.backgroundColor,
+        content: TextField(
+          controller: textEditingController,
+          style: TextStyle(
+              color: AppTheme.lightTwo,
+              fontSize: h! * 3,
+              fontFamily: AppTheme.fontFamily),
+          decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.strongOne),
+            ),
+            hintText: "goal",
+            hintStyle: TextStyle(
+              color: AppTheme.lightOne,
+              fontSize: h! * 3,
+              fontFamily: AppTheme.fontFamily,
+            ),
+          ),
+        ),
+      );
+      await showDialog(context: context, builder: (_) => alertDialog);
+    }
   }
 
   @override

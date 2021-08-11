@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:me/Data/sdk.dart';
+import 'package:me/SDK/ground.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io';
 
 class PersonalDatabase {
   PersonalDatabase._ctor(); //private constructor
@@ -43,5 +45,14 @@ class PersonalDatabase {
     if (performOnCloud) {
       await customPost(sql);
     }
+  }
+}
+
+//executes post operations
+Future<void> postData(String sql) async {
+  if (kIsWeb) {
+    await customPost(sql);
+  } else if (Platform.isAndroid || Platform.isIOS) {
+    await PersonalDatabase.instance.execute(sql);
   }
 }
