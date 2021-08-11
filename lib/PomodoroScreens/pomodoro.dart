@@ -29,14 +29,14 @@ import 'package:flutter/material.dart'
         UnderlineInputBorder,
         Widget,
         showDialog;
-import 'package:me/Data/Tables/pomodoroClass.dart';
-import 'package:me/Data/personal_database.dart';
+import 'package:me/SDK/ground.dart';
 import 'package:me/functions.dart';
 import 'package:syncfusion_flutter_charts/charts.dart'
     show AreaSeries, SfCartesianChart, ChartSeries;
 
 //my imports:
 import 'package:me/theme.dart';
+import 'package:me/SDK/Tables/pomodoro.dart';
 
 class PomodoroScreen extends StatefulWidget {
   ///the screen from which you can start performing the Pomodoro technique
@@ -57,16 +57,16 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
 
   Map<String, dynamic>? data;
   Future<void> getAsyncData() async {
-    List<int> pomodoroCounts = await QueryPomodoro.getSevenLastPomodoroDays();
+    List<int> pomodoroCounts = await Pomodoro.getSevenLastPomodoroCounts();
     List<Performance> chartData = List.empty(growable: true);
     for (int i = 0; i < 7; i++) {
       chartData.add(Performance(dayNumber: i + 1, count: pomodoroCounts[i]));
     }
     data = {
       "chartData": chartData,
-      "yesterdayCount": await QueryPomodoro.getPomodoroCount(-1),
-      "currentCount": await QueryPomodoro.getPomodoroCount(0),
-      "currentGoal": await QueryPomodoro.getPomodoroGoal()
+      "yesterdayCount": await Pomodoro.getYesterdayPomdoroCount(),
+      "currentCount": await Pomodoro.getCurrentPomodoroCount(),
+      "currentGoal": await Pomodoro.getCurrrentPomdoroGoal()
     };
     setState(() {
       data = data;
@@ -74,7 +74,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
   }
 
   Future<void> checkDayInitialization() async {
-    if (!await QueryPomodoro.isDayInitialized()) {
+    if (!await Pomodoro.isDayInitialized()) {
       AlertDialog alertDialog = AlertDialog(
         title: Text(
           "Enter today´s Pomdoro Goal:",
@@ -96,7 +96,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
             onPressed: () async {
               String time = currentDateString();
               int goal = int.parse(textEditingController.text);
-              await postData(
+              await customPost(
                   "INSERT INTO pomodoro VALUES('$time', $goal, 0)");
                   await getAsyncData();
               setState((){

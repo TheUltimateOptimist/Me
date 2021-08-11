@@ -6,10 +6,9 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:audioplayers/audioplayers.dart' show AudioPlayer;
 import 'package:flutter/material.dart';
-import 'package:me/Data/Tables/pomodoroClass.dart';
-import 'package:me/Data/personal_database.dart';
 import 'package:me/PomodoroScreens/pomodoro.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:me/SDK/Tables/pomodoro.dart';
 import 'package:me/SDK/ground.dart';
 import 'package:me/functions.dart';
 
@@ -60,7 +59,7 @@ class _WorkingState extends State<Working> {
         playMusic();
         currentCount = currentCount! + 1;
         String time = currentDateString();
-        postData("UPDATE pomodoro SET count = count + 1 WHERE day = '$time'");
+        customPost("UPDATE pomodoro SET count = count + 1 WHERE day = '$time'");
         if (stepNumber == 4) {
           Navigator.pop(context);
           timer.cancel();
@@ -88,7 +87,7 @@ class _WorkingState extends State<Working> {
   }
 
   Future<void> getAsyncData() async {
-    currentCount = await QueryPomodoro.getPomodoroCount(0);
+    currentCount = await Pomodoro.getCurrentPomodoroCount();
     setState(() {
       currentCount = currentCount;
     });
