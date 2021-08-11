@@ -27,7 +27,7 @@ class _WorkingState extends State<Working> {
   Timer? t;
   String title = "Work like hell!";
   String timeLeft = "27:00";
-  int secondsLeft = 5;
+  int secondsLeft = 27*60;
   int stepNumber = 1;
   bool makeAPause = true;
   bool isRunning = true;
