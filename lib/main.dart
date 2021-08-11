@@ -2,6 +2,7 @@
 
 //packages:
 import 'package:flutter/material.dart';
+import 'package:connectivity/connectivity.dart';
 
 //my imports:
 import 'quiz.dart';
