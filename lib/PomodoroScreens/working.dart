@@ -31,6 +31,8 @@ class _WorkingState extends State<Working> {
   int stepNumber = 1;
   bool makeAPause = true;
   bool isRunning = true;
+  late DateTime startingTime;
+  late DateTime pauseStart;
 
   void playMusic() {
     if (kIsWeb) {
@@ -50,12 +52,20 @@ class _WorkingState extends State<Working> {
   @override
   void initState() {
     getAsyncData();
+    startingTime = DateTime.now();
     t = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
       if (isRunning) {
-        secondsLeft = secondsLeft - 1;
+        late Duration duration;
+        if(makeAPause){
+            duration = Duration(minutes: 27);
+        }
+        else if (!makeAPause){
+          duration = Duration(minutes: 3);
+        }
+        secondsLeft = startingTime.add(duration).difference(DateTime.now()).inSeconds;
         timeLeft = toTimeString(secondsLeft);
       }
-      if (secondsLeft == 0 && makeAPause == true) {
+      if (secondsLeft <= 0 && makeAPause == true) {
         playMusic();
         currentCount = currentCount! + 1;
         String time = currentDateString();
@@ -64,14 +74,16 @@ class _WorkingState extends State<Working> {
           Navigator.pop(context);
           timer.cancel();
         }
-        secondsLeft = 180;
         title = "Take a break!";
-        timeLeft = toTimeString(180);
+        secondsLeft = 180;
+        timeLeft = toTimeString(secondsLeft);
+        startingTime = DateTime.now();
         makeAPause = false;
-      } else if (secondsLeft == 0 && makeAPause == false) {
+      } else if (secondsLeft <= 0 && makeAPause == false) {
         playMusic();
-        secondsLeft = 27 * 60;
-        timeLeft = toTimeString(27 * 60);
+        secondsLeft = 27*60;
+        timeLeft = toTimeString(secondsLeft);
+        startingTime = DateTime.now();
         title = "Work like hell!";
         stepNumber = stepNumber + 1;
         makeAPause = true;
@@ -147,8 +159,11 @@ class _WorkingState extends State<Working> {
                         onPressed: () {
                           if (isRunning) {
                             isRunning = false;
-                          } else
+                            pauseStart = DateTime.now();
+                          } else{
                             isRunning = true;
+                            startingTime = startingTime.add(DateTime.now().difference(pauseStart));
+                            }
                           setState(() {
                             isRunning = isRunning;
                           });
