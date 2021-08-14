@@ -8,7 +8,6 @@ import 'package:audioplayers/audioplayers.dart' show AudioPlayer;
 import 'package:flutter/material.dart';
 import 'package:me/PomodoroScreens/pomodoro.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
-import 'package:me/SDK/Tables/pomodoro.dart';
 import 'package:me/SDK/ground.dart';
 import 'package:me/functions.dart';
 
@@ -16,14 +15,15 @@ import 'package:me/functions.dart';
 import 'package:me/theme.dart';
 
 class Working extends StatefulWidget {
-  const Working({Key? key}) : super(key: key);
+  const Working({required this.currentCount,Key? key}) : super(key: key);
+  final int currentCount;
 
   @override
   _WorkingState createState() => _WorkingState();
 }
 
 class _WorkingState extends State<Working> {
-  int? currentCount;
+  int additionalCount = 0;
   Timer? t;
   String title = "Work like hell!";
   String timeLeft = "27:00";
@@ -51,7 +51,6 @@ class _WorkingState extends State<Working> {
 
   @override
   void initState() {
-    getAsyncData();
     startingTime = DateTime.now();
     t = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
       if (isRunning) {
@@ -67,11 +66,11 @@ class _WorkingState extends State<Working> {
       }
       if (secondsLeft <= 0 && makeAPause == true) {
         playMusic();
-        currentCount = currentCount! + 1;
+        additionalCount = additionalCount + 1;
         String time = currentDateString();
         customPost("UPDATE pomodoro SET count = count + 1 WHERE day = '$time'");
         if (stepNumber == 4) {
-          Navigator.pop(context);
+          Navigator.pop(context, additionalCount + widget.currentCount);
           timer.cancel();
         }
         title = "Take a break!";
@@ -98,13 +97,6 @@ class _WorkingState extends State<Working> {
     super.initState();
   }
 
-  Future<void> getAsyncData() async {
-    currentCount = await Pomodoro.getCurrentPomodoroCount();
-    setState(() {
-      currentCount = currentCount;
-    });
-  }
-
   String toTimeString(int seconds) {
     String minutes = ((seconds / 60).floor()).toString();
     String remainingSeconds = (seconds % 60).toString();
@@ -119,11 +111,6 @@ class _WorkingState extends State<Working> {
 
   @override
   Widget build(BuildContext context) {
-    if (currentCount == null) {
-      return Container(
-        color: AppTheme.backgroundColor,
-      );
-    } else {
       initSize(context);
       return Scaffold(
           backgroundColor: AppTheme.backgroundColor,
@@ -144,7 +131,7 @@ class _WorkingState extends State<Working> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CountingText(
-                  text: "Current Count: $currentCount",
+                  text: "Current Count: " + (widget.currentCount + additionalCount).toString(),
                   fontMultiplier: 5,
                 ),
                 Row(
@@ -212,11 +199,9 @@ class _WorkingState extends State<Working> {
             ),
           ));
     }
-  }
-
   List<Widget> step(int stepId) {
     Color containerColor;
-    if (stepNumber == stepId) {
+    if (additionalCount == stepId - 1) {
       containerColor = AppTheme.strongOne;
     } else
       containerColor = AppTheme.strongTwo;

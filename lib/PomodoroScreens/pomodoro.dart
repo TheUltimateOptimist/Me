@@ -28,7 +28,9 @@ import 'package:flutter/material.dart'
         TextStyle,
         UnderlineInputBorder,
         Widget,
+        MaterialPageRoute,
         showDialog;
+import 'package:me/PomodoroScreens/working.dart';
 import 'package:me/SDK/ground.dart';
 import 'package:me/functions.dart';
 import 'package:syncfusion_flutter_charts/charts.dart'
@@ -98,9 +100,8 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
               int goal = int.parse(textEditingController.text);
               await customPost(
                   "INSERT INTO pomodoro VALUES('$time', $goal, 0)");
-                  await getAsyncData();
-              setState((){
-              });
+              await getAsyncData();
+              setState(() {});
               Navigator.pop(context);
             },
           )
@@ -168,7 +169,18 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                     primary: AppTheme.strongOne,
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, "home/pomodoro/working");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Working(
+                          currentCount: data!["currentCount"],
+                        ),
+                      ),
+                    ).then((value) {
+                      setState(() {
+                        data!["currentCount"] = value;
+                      });
+                    });
                   },
                   child: Text(
                     "EXECUTE",

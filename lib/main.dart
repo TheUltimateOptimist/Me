@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
         "home": (context) => MyHomePage(title: "Me"),
         "home/quiz": (context) => Quiz(),
         "home/pomodoro": (context) => PomodoroScreen(),
-        "home/pomodoro/working": (context) => Working(),
       },
       home: MyHomePage(title: 'Me'),
     );
