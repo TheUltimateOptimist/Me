@@ -3,6 +3,7 @@
 //packages:
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:me/test.dart';
 
 //my imports:
 import 'quiz.dart';
@@ -20,11 +21,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Me',
       theme: ThemeData(),
-      initialRoute: "home/pomodoro",
+      initialRoute: "test",
       routes: {
         "home": (context) => MyHomePage(title: "Me"),
         "home/quiz": (context) => Quiz(),
         "home/pomodoro": (context) => PomodoroScreen(),
+        "test": (context) => TimerScreen()
       },
       home: MyHomePage(title: 'Me'),
     );
