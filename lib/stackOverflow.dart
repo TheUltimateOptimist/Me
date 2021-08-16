@@ -1,156 +1,176 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 
 //needed for using the Timer
-import 'dart:async';
 
-class TimerScreen extends StatefulWidget {
-  const TimerScreen({Key? key}) : super(key: key);
-
-  @override
-  _TimerScreenState createState() => _TimerScreenState();
-}
-
-class _TimerScreenState extends State<TimerScreen> {
-//the time left till the next special time comes up
-  String timeLeft = "";
-
-  ///takes an int when converting it to string adds
-  /// a 0 in fron when it is smaller than 10
-  ///
-  ///will look nicer  when displayed on the screen
-  String customString(int i) {
-    if (i < 10) {
-      return "0" + i.toString();
-    } else {
-      return i.toString();
-    }
-  }
-
-  ///converts a duration to a
-  ///string: days hours:minuts:seconds
-  String remainingTimeToText(Duration duration) {
-    print(duration);
-    int days = duration.inDays;
-    int hours = duration.inHours - days * 24;
-    int minutes = duration.inMinutes - hours * 60 - days * 24 * 60;
-    int seconds =
-        duration.inSeconds - hours * 3600 - minutes * 60 - days * 86400;
-    if (days > 0) {
-      String s = " days ";
-      if (days == 1) {
-        s = " day ";
-      }
-      return days.toString() +
-          s +
-          customString(hours) +
-          ":" +
-          customString(minutes) +
-          ":" +
-          customString(seconds);
-    } else {
-      return customString(hours) +
-          ":" +
-          customString(minutes) +
-          ":" +
-          customString(seconds);
-    }
-  }
-
-  ///given a list of ints and another int value
-  ///
-  ///returs true it the value is contained in the list
-  ///
-  ///else returns false
-  bool listContainsValue(List<int> list, int value) {
-    for (var element in list) {
-      if (element == value) {
-        print(true);
-        return true;
-      }
-    }
-    print(false);
-    return false;
-  }
-
-  ///returns the time remaining till the next
-  ///special time takes place as a string: hours:minutes:seconds
-  ///
-  ///if specialTime is currently active
-  ///it returns an empty string
-  ///
-  ///specialTimes have to be given by entering an int list with all special
-  ///weekdays and entering the startingHour and the endingHour
-  timeRemaining(List<int> weekdays, int startingHour, int endingHour) {
-    DateTime now = DateTime.now();
-    bool timeIsSpecial = false;
-    for (var specificWeekday in weekdays) {
-      if (now.weekday == specificWeekday &&
-          (now.hour >= startingHour && now.hour < endingHour)) {
-        timeIsSpecial = true;
-      }
-    }
-    print(timeIsSpecial);
-    if (!timeIsSpecial) {
-      DateTime nextSpecialTime =
-          DateTime(now.year, now.month, now.day, startingHour);
-      while (nextSpecialTime.isBefore(now) ||
-          !listContainsValue(weekdays, nextSpecialTime.weekday)) {
-        nextSpecialTime = nextSpecialTime.add(Duration(days: 1));
-      }
-      return remainingTimeToText(nextSpecialTime.difference(now));
-    } else {
-      return "";
-    }
-  }
-
-  @override
-  void initState() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      if (mounted == true) {
-        setState(() {
-          timeLeft = timeRemaining([4, 5, 6], 18, 22);
-        });
-      }
-    });
-    super.initState();
-  }
-
+// ignore: must_be_immutable
+class SmallBtn extends StatelessWidget {
+  final String passedText;
+  IconData passedIcon;
+  Color passedBGColor;
+  Color passedFontColor;
+  Color passedBorderColor;
+  bool isShadowEnabled;
+  SmallBtn({
+    @required this.passedText,
+    this.passedIcon,
+    this.passedBGColor,
+    this.passedFontColor,
+    this.passedBorderColor,
+    this.isShadowEnabled,
+  });
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
-        child: Center(
-          child: Text(
-            timeLeft,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 40,
-            ),
+    isShadowEnabled == null
+        ? isShadowEnabled = false
+        : isShadowEnabled = isShadowEnabled;
+    final deviceSize = MediaQuery.of(context).size;
+    return Container(
+      // alignment: Alignment.bottomLeft,
+      // width: deviceSize.width * 0.5 + passedText.length * 3,
+      padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
+      height: deviceSize.height * 0.04,
+      decoration: BoxDecoration(
+        color: passedBGColor == null ? Colors.brown : passedBGColor,
+        borderRadius: BorderRadius.all(
+          Radius.circular(
+            deviceSize.height * 0.02,
           ),
         ),
+        border: Border.all(
+          color: passedBorderColor == null
+              ? Colors.transparent
+              : passedBorderColor,
+        ),
+        boxShadow: [
+          isShadowEnabled
+              ? BoxShadow(
+                  color: Colors.brown,
+                  blurRadius: 10.0, // has the effect of softening the shadow
+                  spreadRadius: 1.0, // has the effect of extending the shadow
+                  offset: Offset(
+                    0.0, // horizontal
+                    1.0, // vertical
+                  ),
+                )
+              : BoxShadow()
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          passedIcon != null
+              ? Icon(
+                  passedIcon,
+                  color: Colors.white,
+                  size: deviceSize.height * 0.02,
+                )
+              : Container(),
+          passedIcon != null
+              ? SizedBox(width: deviceSize.width * 0.01)
+              : SizedBox(),
+          Text(
+            passedText,
+            style: TextStyle(
+              fontSize: deviceSize.height * 0.018,
+              fontFamily: "Dancing",
+              color: passedFontColor != null ? passedFontColor : Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-///takes a dateTime and returns the date belonging to it
-DateTime toDate(DateTime time) {
-  return DateTime(time.year, time.month, time.day);
+class CombinedHomeView extends StatefulWidget {
+  // --- Services Headings
+  @override
+  _CombinedHomeViewState createState() => _CombinedHomeViewState();
 }
 
-String title = "";
-st() {
-  return ElevatedButton(
-    onPressed: () {
-      if (/*check if the date the button was pressed the last 
-      time is not equal to the toDate(DateTime.now())*/1 == 1) {
-        print("Once in a day");
-        title = "Change Date";
-        //save the toDate(DateTime.now()) using 
-        //shared Preferences or sqflite
-      }
-    },
-    child: Text(title),
-  );
+class _CombinedHomeViewState extends State<CombinedHomeView> {
+  String fontMontserrat = "Dancing";
+  _showGrocOrderReviewDialog(Size _deviceSize) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
+        width: double.infinity,
+        height: _deviceSize.height * 0.28,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "How was your last order?",
+              style: TextStyle(
+                fontFamily: fontMontserrat,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.2),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(_deviceSize.height * 0.02),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: TextField(
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Add additional remarks',
+                      hintStyle: TextStyle(
+                        fontSize: _deviceSize.height * 0.015,
+                        fontFamily: fontMontserrat,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: SmallBtn(
+                    passedText: "Cancel",
+                    passedBorderColor: Colors.green,
+                    passedBGColor: Colors.white,
+                    passedFontColor: Colors.brown,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(child: SmallBtn(passedText: "Submit")),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size _deviceSize = MediaQuery.of(context).size;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // ------------ List of content
+        ListView(/* few simple widgets here*/),
+        // ------------ Dialog
+        _showGrocOrderReviewDialog(_deviceSize)
+      ],
+    );
+  }
 }

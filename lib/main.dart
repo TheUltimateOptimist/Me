@@ -1,8 +1,10 @@
 //contains main entry point of the app
 
 //packages:
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:me/Data/sync.dart';
 import 'package:me/stackOverflow.dart';
 
 //my imports:
@@ -10,8 +12,13 @@ import 'quiz.dart';
 import 'PomodoroScreens/pomodoro.dart';
 import 'package:me/PomodoroScreens/working.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (await (Connectivity().checkConnectivity()) != ConnectivityResult.none &&
+      !kIsWeb) {
+    await SyncDatabases.integrateRemoteChanges();
+    SyncDatabases.pushLocalChanges();
+  }
   runApp(MyApp());
 }
 
@@ -26,7 +33,7 @@ class MyApp extends StatelessWidget {
         "home": (context) => MyHomePage(title: "Me"),
         "home/quiz": (context) => Quiz(),
         "home/pomodoro": (context) => PomodoroScreen(),
-        "test": (context) => TimerScreen()
+        "test": (context) => CombinedHomeView()
       },
       home: MyHomePage(title: 'Me'),
     );

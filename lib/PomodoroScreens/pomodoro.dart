@@ -30,6 +30,7 @@ import 'package:flutter/material.dart'
         Widget,
         MaterialPageRoute,
         showDialog;
+import 'package:me/Data/Concepts/pomodoro.dart';
 import 'package:me/PomodoroScreens/working.dart';
 import 'package:me/SDK/ground.dart';
 import 'package:me/functions.dart';
@@ -38,7 +39,6 @@ import 'package:syncfusion_flutter_charts/charts.dart'
 
 //my imports:
 import 'package:me/theme.dart';
-import 'package:me/SDK/Tables/pomodoro.dart';
 
 class PomodoroScreen extends StatefulWidget {
   ///the screen from which you can start performing the Pomodoro technique

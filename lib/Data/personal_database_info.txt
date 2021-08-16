@@ -1,0 +1,30 @@
+This file contains info on how personal database is built
+
+transaction table:
+   sql
+    -> sql_id INTEGER PRIMARY KEY AUTO_INCREMENT
+    -> sql TEXT NOT NULL
+
+
+all tables:
+1. pomodoro
+    -> day DATE PRIMARY KEY
+    -> goal INTEGER NOT NULL
+    -> count INTEGER NOT NULL
+
+2. quizes
+    -> quiz_id INTEGER AUTO_INCREMENT
+    -> quiz_name TEXT NOT NULL
+    -> quiz_numberOfQuestions INTEGER NOT NULL
+    -> quiz_learned INTEGER NOT NULL(0:false, 1:true) 
+
+3. questions
+    -> question_question TEXT NOT NULL
+    -> question_answer TEXT NOT NULL
+    -> question_number TEXT NOT NULL
+    -> question_quiz_id INTEGER NOT NULL FOREIGN KEY
+
+4. quizing
+    -> quizing_datetime TIMESTAMP PRIMARY KEY
+    -> quizing_quiz_id INTEGER NOT NULL FOREIGN KEY  
+    -> quizing_correct INTEGER NOT NULL  

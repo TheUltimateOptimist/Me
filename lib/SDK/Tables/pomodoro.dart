@@ -8,7 +8,7 @@ import 'package:me/functions.dart';
 
 import '../ground.dart';
 
-mixin Pomodoro {
+mixin PomodoroSDK {
   static Future<int> getCurrentPomodoroCount() async {
     String now = currentDateString();
     List<dynamic> result =

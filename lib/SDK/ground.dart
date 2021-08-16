@@ -24,3 +24,13 @@ Future<List<dynamic>> customGet(String sql) async {
     return [];
   }
 }
+
+///adds the sql operation that was only executed on the remote database to the sql table
+Future<void> remoteAddSql(String sqlOperation) {
+  try {
+    customPost("INSERT INTO sql VALUES($sqlOperation)");
+  } catch (error) {
+    print(error);
+  }
+  throw Exception;
+}
