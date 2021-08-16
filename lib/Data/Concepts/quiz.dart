@@ -9,9 +9,13 @@ import '../../functions.dart';
 
 mixin Quiz {
   ///returns a two dimensional list containing the following information on each quiz:
+  ///
   ///index 0: id int
+  ///
   ///index 1: name String
+  ///
   ///index 2: numberOfQuestions int
+  ///
   ///index 3: learned bool
   static Future<List<List<dynamic>>> getQuizes() async {
     if (kIsWeb) {

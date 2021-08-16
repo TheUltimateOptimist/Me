@@ -5,20 +5,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:me/Data/sync.dart';
-import 'package:me/stackOverflow.dart';
+//import 'package:me/stackOverflow.dart';
 
 //my imports:
-import 'quiz.dart';
+import 'quizScreens/quiz.dart';
 import 'PomodoroScreens/pomodoro.dart';
 import 'package:me/PomodoroScreens/working.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (await (Connectivity().checkConnectivity()) != ConnectivityResult.none &&
-      !kIsWeb) {
-    await SyncDatabases.integrateRemoteChanges();
-    SyncDatabases.pushLocalChanges();
-  }
+  // if (await (Connectivity().checkConnectivity()) != ConnectivityResult.none &&
+  //     !kIsWeb) {
+  //   await SyncDatabases.integrateRemoteChanges();
+  //   SyncDatabases.pushLocalChanges();
+  // }
   runApp(MyApp());
 }
 
@@ -28,12 +28,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Me',
       theme: ThemeData(),
-      initialRoute: "test",
+      initialRoute: "home/quiz",
       routes: {
         "home": (context) => MyHomePage(title: "Me"),
-        "home/quiz": (context) => Quiz(),
+        "home/quiz": (context) => QuizScreen(),
         "home/pomodoro": (context) => PomodoroScreen(),
-        "test": (context) => CombinedHomeView()
+        //"test": (context) => CombinedHomeView()
       },
       home: MyHomePage(title: 'Me'),
     );

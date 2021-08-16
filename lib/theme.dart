@@ -36,7 +36,7 @@ class AppTheme {
       textTheme: TextTheme(
         headline6: TextStyle(
           color: lightTwo,
-          fontSize: h! * 7,fontFamily: "Dancing"
+          fontSize: h! * 4,
         ),
       ));
 }
