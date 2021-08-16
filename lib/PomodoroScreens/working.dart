@@ -66,7 +66,6 @@ class _WorkingState extends State<Working> {
       }
       if (secondsLeft <= 0 && makeAPause == true) {
         playMusic();
-        additionalCount = additionalCount + 1;
         String time = currentDateString();
         customPost("UPDATE pomodoro SET count = count + 1 WHERE day = '$time'");
         if (stepNumber == 4) {
@@ -79,6 +78,7 @@ class _WorkingState extends State<Working> {
         startingTime = DateTime.now();
         makeAPause = false;
       } else if (secondsLeft <= 0 && makeAPause == false) {
+        additionalCount = additionalCount + 1;
         playMusic();
         secondsLeft = 27*60;
         timeLeft = toTimeString(secondsLeft);
