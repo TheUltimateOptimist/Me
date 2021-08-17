@@ -69,7 +69,9 @@ mixin Quiz {
         result.add([
           row["question_question"],
           row["answer_answer"],
-          int.parse(row["question_learned"])
+          int.parse(
+            row["question_learned"],
+          ),
         ]);
       }
       return result;

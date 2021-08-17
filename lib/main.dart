@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:me/Data/sync.dart';
+import 'package:me/quizScreens/editQuestion.dart';
 import 'package:me/quizScreens/specificQuiz.dart';
 //import 'package:me/stackOverflow.dart';
 
@@ -28,7 +29,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Me',
-      theme: ThemeData(),
       initialRoute: "home/quizes/specificQuiz",
       routes: {
         "home": (context) => MyHomePage(title: "Me"),

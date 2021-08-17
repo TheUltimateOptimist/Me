@@ -5,6 +5,8 @@ import 'package:me/UIWidgets/customListView.dart';
 import 'package:me/UIWidgets/floatingActionButton.dart';
 import 'package:me/theme.dart';
 
+import 'editQuestion.dart';
+
 //my imports:
 
 class SpecificQuiz extends StatefulWidget {
@@ -33,12 +35,18 @@ class _SpecificQuizState extends State<SpecificQuiz> {
 
   Future<void> asyncData() async {
     //quiz = await Quiz.getQuestions(widget.quizId);
-    quiz = [
-      ["What is one plus one equal to?", "2", 0],
-      ["Why is the banane krumm", "What the fuck", 1],
-      ["Wie heißt Jonathan mit Vorname?", "Definitiv Jonathan", 0]
-    ];
-    addIndices();
+    Future.delayed(
+      Duration(seconds: 5),
+    ).then((value) {
+      quiz = [
+        ["What is one plus one equal to?", "2", 0],
+        ["Why is the banane krumm", "What the fuck", 1],
+        ["Wie heißt Jonathan mit Vorname?", "Definitiv Jonathan", 0]
+      ];
+      setState(() {
+        addIndices();
+      });
+    });
   }
 
   void addIndices() {
@@ -50,58 +58,74 @@ class _SpecificQuizState extends State<SpecificQuiz> {
   @override
   Widget build(BuildContext context) {
     initSize(context);
-    return Scaffold(
-      floatingActionButton: CustomFloatingActionButton(),
-      appBar: AppBar(
-        backgroundColor: AppTheme.appBarTheme.backgroundColor,
-        title: Text(
-          widget.name,
-        ),
-        textTheme: AppTheme.appBarTheme.textTheme,
-        // leading: Icon(
-        //   Icons.check_rounded,
-        //   color: Colors.green,
-        //   size: h! * 3,
-        // ),
-        actions: [
-          Row(
-            children: [
-              Text(
-                "12",
-                style: TextStyle(fontSize: h! * 2.5),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.play_circle,
-                  size: h! * 4,
-                  color: Colors.green,
+    if (quiz == null) {
+      return Container(
+        color: AppTheme.backgroundColor,
+      );
+    } else {
+      return Scaffold(
+        floatingActionButton: CustomFloatingActionButton(),
+        appBar: AppBar(
+          backgroundColor: AppTheme.appBarTheme.backgroundColor,
+          title: Text(
+            widget.name,
+          ),
+          textTheme: AppTheme.appBarTheme.textTheme,
+          // leading: Icon(
+          //   Icons.check_rounded,
+          //   color: Colors.green,
+          //   size: h! * 3,
+          // ),
+          actions: [
+            Row(
+              children: [
+                Text(
+                  "12",
+                  style: TextStyle(fontSize: h! * 2.5),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      backgroundColor: AppTheme.strongTwo,
-      body: CustomListView(
-        indexToInsertCompletionStatus: 1,
-        showCompletionStatus: true,
-        completionStatuses:
-            quiz!.map((e) => int.parse(e[2].toString())).toList(),
-        onPressed: () {},
-        titles: quiz!.map((e) => e[3].toString() + e[0].toString()).toList(),
-        addGarbageCan: true,
-        trailing: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.edit,
-              size: h! * 3,
-              color: AppTheme.strongOne,
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.play_circle,
+                    size: h! * 4,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+        backgroundColor: AppTheme.strongTwo,
+        body: CustomListView(
+          indexToInsertCompletionStatus: 1,
+          showCompletionStatus: true,
+          completionStatuses:
+              quiz!.map((e) => int.parse(e[2].toString())).toList(),
+          onPressed: () {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => EditQuestion(
+            //       "What is one plus one",
+            //       "2--a--3--a--4--a--5",
+            //     ),
+            //   ),
+            // );
+          },
+          titles: quiz!.map((e) => e[3].toString() + e[0].toString()).toList(),
+          addGarbageCan: true,
+          trailing: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.edit,
+                size: h! * 3,
+                color: AppTheme.strongOne,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
