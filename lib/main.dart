@@ -5,10 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:me/Data/sync.dart';
+import 'package:me/quizScreens/specificQuiz.dart';
 //import 'package:me/stackOverflow.dart';
 
 //my imports:
-import 'quizScreens/quiz.dart';
+import 'quizScreens/quizes.dart';
 import 'PomodoroScreens/pomodoro.dart';
 import 'package:me/PomodoroScreens/working.dart';
 
@@ -28,11 +29,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Me',
       theme: ThemeData(),
-      initialRoute: "home/quiz",
+      initialRoute: "home/quizes/specificQuiz",
       routes: {
         "home": (context) => MyHomePage(title: "Me"),
-        "home/quiz": (context) => QuizScreen(),
+        "home/quizes": (context) => QuizScreen(),
+        "home/quizes/specificQuiz": (context) => SpecificQuiz(
+              name: "first quiz",
+              learned: 1,
+              quizId: 1,
+            ),
         "home/pomodoro": (context) => PomodoroScreen(),
+
         //"test": (context) => CombinedHomeView()
       },
       home: MyHomePage(title: 'Me'),

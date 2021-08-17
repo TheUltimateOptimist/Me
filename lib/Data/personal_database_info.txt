@@ -23,6 +23,7 @@ all tables:
     -> question_answer TEXT NOT NULL
     -> question_number TEXT NOT NULL
     -> question_quiz_id INTEGER NOT NULL FOREIGN KEY
+    -> question_learned INT NOT NULL
 
 4. quizing
     -> quizing_datetime TIMESTAMP PRIMARY KEY

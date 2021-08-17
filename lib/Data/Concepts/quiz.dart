@@ -51,18 +51,26 @@ mixin Quiz {
   ///index 0: question String
   ///
   ///index 1: answer String
-  static Future<List<List<String>>> getQuestions(int quizId) async {
+  static Future<List<List<dynamic>>> getQuestions(int quizId) async {
     if (kIsWeb) {
       return QuizSDK.getQuestions(quizId);
     } else if (Platform.isAndroid || Platform.isIOS) {
       List<Map<String, dynamic>> queryResult = await PersonalDatabase.instance
           .selectFromTable("questions",
-              columns: ["question_question", "question_answer"],
+              columns: [
+                "question_question",
+                "question_answer",
+                "question_learned"
+              ],
               whereClause: "question_quiz_id = $quizId",
               orderBy: "question_number ASC");
-      List<List<String>> result = List.empty(growable: true);
+      List<List<dynamic>> result = List.empty(growable: true);
       for (var row in queryResult) {
-        result.add([row["question_question"], row["answer_answer"]]);
+        result.add([
+          row["question_question"],
+          row["answer_answer"],
+          int.parse(row["question_learned"])
+        ]);
       }
       return result;
     }

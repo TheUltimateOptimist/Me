@@ -26,12 +26,12 @@ mixin QuizSDK {
   ///index 0: question String
   ///
   ///index 1: answer String
-  static Future<List<List<String>>> getQuestions(int quizId) async {
+  static Future<List<List<dynamic>>> getQuestions(int quizId) async {
     List<dynamic> data = await customGet(
-        "SELECT question_question, question_answer FROM questions WHERE question_quiz_id = $quizId ORDER BY question_number ASC");
-    List<List<String>> result = List.empty(growable: true);
+        "SELECT question_question, question_answer, question_learned FROM questions WHERE question_quiz_id = $quizId ORDER BY question_number ASC");
+    List<List<dynamic>> result = List.empty(growable: true);
     for (var row in data) {
-      result.add(row);
+      result.add([row[0], row[1], int.parse(row[2])]);
     }
     return result;
   }
