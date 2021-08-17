@@ -29,15 +29,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Me',
-      initialRoute: "home/quizes/specificQuiz",
+      initialRoute: "home/quizes",
       routes: {
         "home": (context) => MyHomePage(title: "Me"),
         "home/quizes": (context) => QuizScreen(),
-        "home/quizes/specificQuiz": (context) => SpecificQuiz(
-              name: "first quiz",
-              learned: 1,
-              quizId: 1,
-            ),
         "home/pomodoro": (context) => PomodoroScreen(),
 
         //"test": (context) => CombinedHomeView()

@@ -1,7 +1,6 @@
 //packages:
 import 'package:flutter/material.dart';
 import 'package:me/Data/Concepts/quiz.dart';
-import 'package:me/UIWidgets/customListView.dart';
 import 'package:me/UIWidgets/floatingActionButton.dart';
 import 'package:me/theme.dart';
 
@@ -35,17 +34,13 @@ class _SpecificQuizState extends State<SpecificQuiz> {
 
   Future<void> asyncData() async {
     //quiz = await Quiz.getQuestions(widget.quizId);
-    Future.delayed(
-      Duration(seconds: 5),
-    ).then((value) {
+    setState(() {
       quiz = [
         ["What is one plus one equal to?", "2", 0],
         ["Why is the banane krumm", "What the fuck", 1],
         ["Wie heißt Jonathan mit Vorname?", "Definitiv Jonathan", 0]
       ];
-      setState(() {
-        addIndices();
-      });
+      addIndices();
     });
   }
 
@@ -64,7 +59,13 @@ class _SpecificQuizState extends State<SpecificQuiz> {
       );
     } else {
       return Scaffold(
-        floatingActionButton: CustomFloatingActionButton(),
+        floatingActionButton: CustomFloatingActionButton(onPressed: () {
+          Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditQuestion("", "answer")))
+              .then((value) => asyncData());
+        }),
         appBar: AppBar(
           backgroundColor: AppTheme.appBarTheme.backgroundColor,
           title: Text(
@@ -96,35 +97,80 @@ class _SpecificQuizState extends State<SpecificQuiz> {
           ],
         ),
         backgroundColor: AppTheme.strongTwo,
-        body: CustomListView(
-          indexToInsertCompletionStatus: 1,
-          showCompletionStatus: true,
-          completionStatuses:
-              quiz!.map((e) => int.parse(e[2].toString())).toList(),
-          onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => EditQuestion(
-            //       "What is one plus one",
-            //       "2--a--3--a--4--a--5",
-            //     ),
-            //   ),
-            // );
-          },
-          titles: quiz!.map((e) => e[3].toString() + e[0].toString()).toList(),
-          addGarbageCan: true,
-          trailing: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.edit,
-                size: h! * 3,
-                color: AppTheme.strongOne,
-              ),
-            ),
-          ],
-        ),
+        body: ListView.builder(
+            itemCount: quiz!.length,
+            itemBuilder: (context, index) {
+              IconData icon;
+              Color iconColor;
+              if (quiz![index][2] == 0) {
+                icon = Icons.cancel_rounded;
+                iconColor = AppTheme.strongOne;
+              } else {
+                icon = Icons.check_circle;
+                iconColor = Colors.green;
+              }
+              return ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditQuestion(
+                        quiz![index][0],
+                        quiz![index][1],
+                      ),
+                    ),
+                  );
+                },
+                title: Text(
+                  quiz![index][0],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppTheme.lightOne,
+                    fontSize: h! * 3,
+                  ),
+                ),
+                tileColor: AppTheme.strongTwo,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditQuestion(
+                              quiz![index][0],
+                              quiz![index][1],
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        size: h! * 3,
+                        color: AppTheme.strongOne,
+                      ),
+                    ),
+                    Icon(
+                      icon,
+                      color: iconColor,
+                      size: h! * 3,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        //delete quiz
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        size: h! * 3,
+                        color: AppTheme.lightOne,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
       );
     }
   }

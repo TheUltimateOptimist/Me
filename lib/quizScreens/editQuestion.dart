@@ -1,4 +1,5 @@
 //packages:
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:me/UIWidgets/floatingActionButton.dart';
 
@@ -16,15 +17,11 @@ class EditQuestion extends StatefulWidget {
 }
 
 class _EditQuestionState extends State<EditQuestion> {
+  String? answers;
   List<TextEditingController> controllers = List.empty(growable: true);
   List<Widget> children = List.empty(growable: true);
-  @override
-  void initState() {
-    createChildren(widget.answer.split("-aa-"));
-    super.initState();
-  }
-
-  void createChildren(List<String> answers) {
+  ScrollController scrollController = ScrollController();
+  List<Widget> createChildren(List<String> answers) {
     List<Widget> result = List.empty(growable: true);
     result.add(
       desciption(
@@ -32,43 +29,77 @@ class _EditQuestionState extends State<EditQuestion> {
         false,
       ),
     );
+    controllers.add(TextEditingController(text: widget.question));
     result.add(
-      customTextField(
-        TextEditingController(
-          text: widget.question,
-        ),
-      ),
+      customTextField(controllers[0]),
     );
+    int i = 1;
     for (var element in answers) {
+      controllers.add(TextEditingController(text: element));
       result.add(
         desciption(
-          "Answer: ",
+          i.toString() + ". Answer: ",
           true,
+          answer: element,
         ),
       );
       result.add(
-        customTextField(
-          TextEditingController(
-            text: element,
-          ),
-        ),
+        customTextField(controllers[i]),
       );
+      i++;
     }
-    children = result;
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    print(children.length);
+    if (answers == null) {
+      answers = widget.answer;
+    }
+    children = createChildren(answers!.split("--a--"));
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      floatingActionButton: CustomFloatingActionButton(),
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () {
+          setState(
+            () {
+              answers = answers! + "--a--";
+              controllers = [];
+            },
+          );
+          WidgetsBinding.instance!.addPostFrameCallback((_) {
+            scrollController.animateTo(
+                scrollController.position.maxScrollExtent,
+                duration: Duration(seconds: 1),
+                curve: Curves.decelerate);
+          });
+        },
+      ),
       appBar: AppBar(
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: w! * 2),
+            child: TextButton(
+              onPressed: () {
+                // -->save the changes <--
+                Navigator.pop(context, controllers[0].text);
+              },
+              child: Text(
+                "Save",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: h! * 3,
+                ),
+              ),
+            ),
+          ),
+        ],
         title: Text("Edit"),
         backgroundColor: AppTheme.appBarTheme.backgroundColor,
         textTheme: AppTheme.appBarTheme.textTheme,
       ),
       body: ListView.builder(
+        controller: scrollController,
         itemCount: children.length,
         itemBuilder: (context, index) {
           return children[index];
@@ -77,11 +108,8 @@ class _EditQuestionState extends State<EditQuestion> {
     );
   }
 
-  desciption(String text, bool showDeleteIcon) {
-    EdgeInsets margin = EdgeInsets.only(
-      top: h! * 1,
-      left: h! * 2,
-    );
+  desciption(String text, bool showDeleteIcon, {String? answer}) {
+    EdgeInsets margin = EdgeInsets.only(top: h! * 1, left: h! * 2);
     Container textContainer = Container(
       margin: margin,
       child: Text(
@@ -100,8 +128,18 @@ class _EditQuestionState extends State<EditQuestion> {
           Container(
             margin: margin,
             child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.delete, size: h! * 3, color: AppTheme.strongOne),
+              onPressed: () {
+                setState(() {
+                  List<String> workingList = answers!.split("--a--");
+                  workingList.remove(answer);
+                  answers = workingList.join("--a--");
+                });
+              },
+              icon: Icon(
+                Icons.delete,
+                size: h! * 3,
+                color: AppTheme.strongOne,
+              ),
             ),
           ),
         ],
