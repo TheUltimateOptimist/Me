@@ -61,10 +61,15 @@ class _SpecificQuizState extends State<SpecificQuiz> {
       return Scaffold(
         floatingActionButton: CustomFloatingActionButton(onPressed: () {
           Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EditQuestion("", "answer")))
-              .then((value) => asyncData());
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditQuestion(
+                "",
+                "answer",
+                false,
+              ),
+            ),
+          ).then((value) => asyncData());
         }),
         appBar: AppBar(
           backgroundColor: AppTheme.appBarTheme.backgroundColor,
@@ -114,10 +119,8 @@ class _SpecificQuizState extends State<SpecificQuiz> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditQuestion(
-                        quiz![index][0],
-                        quiz![index][1],
-                      ),
+                      builder: (context) =>
+                          EditQuestion(quiz![index][0], quiz![index][1], false),
                     ),
                   );
                 },
@@ -140,9 +143,7 @@ class _SpecificQuizState extends State<SpecificQuiz> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditQuestion(
-                              quiz![index][0],
-                              quiz![index][1],
-                            ),
+                                quiz![index][0], quiz![index][1], false),
                           ),
                         );
                       },

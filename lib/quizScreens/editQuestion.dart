@@ -8,9 +8,10 @@ import '../theme.dart';
 //my imports:
 
 class EditQuestion extends StatefulWidget {
-  const EditQuestion(this.question, this.answer, {Key? key}) : super(key: key);
+  const EditQuestion(this.question, this.answer, this.isCreation, {Key? key}) : super(key: key);
   final String question;
   final String answer;
+  final bool isCreation;
 
   @override
   _EditQuestionState createState() => _EditQuestionState();
@@ -20,6 +21,7 @@ class _EditQuestionState extends State<EditQuestion> {
   String? answers;
   List<TextEditingController> controllers = List.empty(growable: true);
   List<Widget> children = List.empty(growable: true);
+  String precisionText = "precise";
   ScrollController scrollController = ScrollController();
   List<Widget> createChildren(List<String> answers) {
     List<Widget> result = List.empty(growable: true);
@@ -110,6 +112,7 @@ class _EditQuestionState extends State<EditQuestion> {
 
   desciption(String text, bool showDeleteIcon, {String? answer}) {
     EdgeInsets margin = EdgeInsets.only(top: h! * 1, left: h! * 2);
+    Container trailingButton;
     Container textContainer = Container(
       margin: margin,
       child: Text(
@@ -121,32 +124,53 @@ class _EditQuestionState extends State<EditQuestion> {
       ),
     );
     if (showDeleteIcon) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          textContainer,
-          Container(
-            margin: margin,
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  List<String> workingList = answers!.split("--a--");
-                  workingList.remove(answer);
-                  answers = workingList.join("--a--");
-                });
-              },
-              icon: Icon(
-                Icons.delete,
-                size: h! * 3,
-                color: AppTheme.strongOne,
-              ),
-            ),
+      trailingButton = Container(
+        margin: margin,
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              List<String> workingList = answers!.split("--a--");
+              workingList.remove(answer);
+              answers = workingList.join("--a--");
+            });
+          },
+          icon: Icon(
+            Icons.delete,
+            size: h! * 3,
+            color: AppTheme.strongOne,
           ),
-        ],
+        ),
       );
     } else {
-      return textContainer;
+      trailingButton = Container(
+        margin: margin,
+        child: TextButton(
+          onPressed: () {
+            setState(() {
+              if (precisionText == "precise") {
+                precisionText = "multiple";
+              } else {
+                precisionText = "precise";
+              }
+            });
+          },
+          child: Text(
+            precisionText,
+            style: TextStyle(
+              color: AppTheme.strongTwo,
+              fontSize: h! * 3,
+            ),
+          ),
+        ),
+      );
     }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        textContainer,
+        trailingButton,
+      ],
+    );
   }
 
   customTextField(TextEditingController textEditingController) {
