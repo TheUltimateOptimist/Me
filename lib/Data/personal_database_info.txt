@@ -29,3 +29,19 @@ all tables:
     -> quizing_datetime TIMESTAMP PRIMARY KEY
     -> quizing_quiz_id INTEGER NOT NULL FOREIGN KEY  
     -> quizing_correct INTEGER NOT NULL  
+
+5. transactions
+    -> transaction_id INT PRIMARY KEY
+    -> transaction_medium TEXT NOT NULL
+       a) "cash"
+       b) "debt"
+       c) "bank"
+    -> transaction_reason TEXT NOT NULL
+    -> transaction_classification
+       a) "food"
+       b) "subscription"
+       c) "goods"
+       d) "time"
+    -> transaction_amount FLOAT NOT NULL   
+    -> transaction_datetime TIMESTAMP NOT NULL    
+    
